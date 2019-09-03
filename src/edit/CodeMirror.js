@@ -206,6 +206,12 @@ function registerEventHandlers(cm) {
   on(inp, "keypress", operation(cm, onKeyPress))
   on(inp, "focus", e => onFocus(cm, e))
   on(inp, "blur", e => onBlur(cm, e))
+  on(inp, "beforeinput", e => {
+    if (e.inputType.startsWith("insert")) {
+      inp.value += e.data;
+      e.preventDefault();
+    }
+  })
 }
 
 let initHooks = []

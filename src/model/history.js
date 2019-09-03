@@ -64,6 +64,7 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
   hist.undone.length = 0
   let time = +new Date, cur
   let last
+  let shouldAddUndoItem = true;
 
   if ((hist.lastOp == opId ||
        hist.lastOrigin == change.origin && change.origin &&
@@ -80,6 +81,7 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
       // Add new sub-event
       cur.changes.push(historyChangeFromChange(doc, change))
     }
+    shouldAddUndoItem = false;
   } else {
     // Can not be merged, start a new event.
     let before = lst(hist.done)
@@ -100,6 +102,27 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
   hist.lastOrigin = hist.lastSelOrigin = change.origin
 
   if (!last) signal(doc, "historyAdded")
+
+  const undoNameForChangeOriginName = name => {
+    switch (name) {
+      case "paste":
+        return "paste"
+      case "+delete":
+        return "text deletion"
+      case "+input":
+        return "text insertion"
+      default:
+        return "changes"
+    }
+  }
+
+  if (shouldAddUndoItem && document.undoManager) {
+    document.undoManager.addItem(new UndoItem({
+      label: undoNameForChangeOriginName(change.origin),
+      undo: () => doc.cm.undo(),
+      redo: () => doc.cm.redo()
+    }));
+  }
 }
 
 function selectionEventCanBeMerged(doc, origin, prev, sel) {

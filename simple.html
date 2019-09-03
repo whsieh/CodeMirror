@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="./lib/codemirror.css">
+<script src="./lib/codemirror.js"></script>
+<style>
+    body, html {
+        width: 100%;
+        height: 100%;
+        cursor: text;
+    }
+
+    .CodeMirror {
+        font-size: 18px;
+    }
+
+    .CodeMirror-selected {
+        background: pink !important;
+    }
+</style>
+</head>
+<body>
+<textarea style="display: none;"></textarea>
+<script>
+    const hiddenTextarea = document.querySelector("textarea");
+    hiddenTextarea.textContent = "// This is a very simple CodeMirror test.\n\nfunction foo() {\n    console.log('Hi');\n    return 'Bye';\n}\n";
+    const editor = CodeMirror.fromTextArea(hiddenTextarea, { });
+    document.body.addEventListener("click", () => editor.focus());
+</script>
+</body>
+</html>
